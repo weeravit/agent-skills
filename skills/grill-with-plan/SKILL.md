@@ -1,6 +1,6 @@
 ---
 name: grill-with-plan
-description: Grill a plan in Thai, then write the confirmed design to an English plan doc in-project.
+description: Orchestrator that chains grilling, ponytail, and superpowers:writing-plans — grills a plan in Thai, pressure-tests it against over-engineering, then writes the confirmed design to an English plan doc in-project.
 disable-model-invocation: true
 ---
 
