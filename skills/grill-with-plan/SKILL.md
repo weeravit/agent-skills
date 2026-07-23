@@ -23,3 +23,4 @@ $ARGUMENTS
    - Exclude tests from the plan.
    - Do not run `dart format` on it.
    - Do not perform any translation work.
+   - Comment only what the code cannot say itself — intent, non-obvious constraints.
