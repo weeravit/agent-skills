@@ -15,7 +15,7 @@ $ARGUMENTS
 1. Run `codegraph sync` first, always, before anything else.
 2. Explore the codebase with `codegraph` before and during the session — never grep/read raw when a codegraph query answers it.
 3. Ask the user which language to grill in before starting the session. Use that language for every step below until the plan is written.
-4. Run the `grilling` skill on the design above, conducting the entire session in the chosen language. On every question, present `ponytail`'s minimal/lazy answer as one of the choices alongside grilling's normal recommendation — always, not only when an over-engineering risk appears.
+4. Run the `grilling` skill on the design above, conducting the entire session in the chosen language. Before asking each question, explore the relevant code with `codegraph` so the question and its recommendation are grounded in what the code actually does — never ask from assumption. On every question, present `ponytail`'s minimal/lazy answer as one of the choices alongside grilling's normal recommendation — always, not only when an over-engineering risk appears.
 5. When the session feels complete, ask the user (in the chosen language) whether they want to grill further or add questions. Loop step 4 until they explicitly confirm they're done — never advance on an assumed yes.
 6. Only after that confirmation, run `superpowers:writing-plans` to write the plan:
    - Language: English.
