@@ -25,4 +25,4 @@ $ARGUMENTS
    - Exclude tests from the plan.
    - Do not run `dart format` on it.
    - Do not perform any translation work.
-   - Comment only what the code cannot say itself — intent, non-obvious constraints.
+   - No comments in the plan's code at all. Make the code self-explanatory instead: intent-revealing names, small functions, explicit types — a human reads it without a comment.
