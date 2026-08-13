@@ -1,6 +1,6 @@
 ---
 name: flutter-unit-test
-description: Write Flutter tests with Mocktail and Given-When-Then. Use when the user wants unit tests, widget tests, integration tests, or coverage gaps closed in the UChat Messenger project.
+description: Write Flutter tests with Mocktail and Given-When-Then. Use when the user wants tests written or coverage gaps closed in the UChat Messenger project.
 ---
 
 # Flutter Unit Test
@@ -9,12 +9,13 @@ UChat Messenger mandates **100% coverage** — line, branch, and function. Mockt
 
 ## Rules
 
-- Test path mirrors source path: `lib/core/domain/usecases/get_user.dart` → `test/core/domain/usecases/get_user_test.dart`.
-- Name tests `Given <state>, When <action>, Then <outcome>` — the name carries all three clauses, so the body's comments have something to line up against.
+- `test/` mirrors `lib/` exactly — `core/{domain,data,presentation,infrastructure}/…` and `features/<feature>/{domain,data,presentation}/…`. So `lib/core/domain/usecases/get_user.dart` → `test/core/domain/usecases/get_user_test.dart`.
+- Name tests `Given <state>, When <action>, Then <outcome>`.
 - Every test body is `// Given` / `// When` / `// Then`, in the same order as the name. Combine to `// When & Then` when asserting a throw.
 - One behaviour per test. Split "handles loading and error" into two.
 - Mock the layer directly below, never deeper.
 - Thai text is a first-class case: any model or widget carrying user text gets a `'สวัสดี ครับ'` test.
+- Skip repository *interface* tests — asserting `isA<UserRepository>()` tests the compiler, not the code.
 
 ## Template
 
@@ -76,9 +77,6 @@ when(() => mock.save(any())).thenAnswer((_) async => true);    // any arg
 when(() => mock.post(any(), body: any(named: 'body')))         // named arg
     .thenAnswer((_) async => response);
 
-when(() => mock.getUser(any())).thenAnswer((invocation) =>     // derive from arg
-    User(id: invocation.positionalArguments[0] as String, name: 'X'));
-
 verify(() => mock.getUser('123')).called(1);
 verifyNever(() => mock.deleteUser('123'));
 final captured = verify(() => mock.save(captureAny())).captured;
@@ -99,14 +97,12 @@ Load only what the file under test needs:
 - **Isar database** → [references/isar.md](references/isar.md)
 - **integration test (full flow on device)** → [references/integration.md](references/integration.md)
 
-Skip repository *interface* tests — asserting `isA<UserRepository>()` tests the compiler, not the code.
-
 ## Commands
 
 ```bash
 fvm flutter test                                    # all
 fvm flutter test test/core/domain/entities/user_test.dart
-fvm flutter test --name "Then it returns that user"   # substring match
+fvm flutter test --name "GetUserUseCase"            # substring match, group name
 fvm flutter test --coverage                         # writes coverage/lcov.info
 lcov --summary coverage/lcov.info                   # find gaps (brew install lcov)
 genhtml coverage/lcov.info -o coverage/html         # browsable report

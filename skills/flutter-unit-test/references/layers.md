@@ -50,7 +50,7 @@ group('User', () {
 
 ## Use case
 
-Mock the repository. Cover success, failure, and any caching or short-circuit the use case owns.
+The template in SKILL.md is a use case test — success and failure. Beyond those two, cover whatever caching or short-circuit the use case owns, asserting it through the call count:
 
 ```dart
 test('Given the user was already fetched once, '
