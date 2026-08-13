@@ -25,12 +25,14 @@ setUp(() async {
 tearDown(() async => isar.close(deleteFromDisk: true));
 ```
 
-Isar collections are mutable, so instances are built with cascades and cannot be `const`:
+Two classes look alike here and behave differently. The `@collection` class Isar persists — `User` below — has mutable fields, so it is built with cascades and can never be `const`. The data-layer `UserModel` stays immutable and is constructed `const` as usual.
 
 ```dart
-final user = User()
+final user = User()          // @collection — cascades, never const
   ..id = '123'
   ..name = 'John Doe';
+
+const model = UserModel(id: '123', name: 'John Doe');   // data layer — const
 ```
 
 ## CRUD
@@ -112,7 +114,7 @@ test('Given users stored out of order, '
       ]));
 
   // When
-  final sorted = await isar.users.where().sortByName().findAll();
+  final sorted = await isar.users.filter().sortByName().findAll();
 
   // Then
   expect(sorted.map((u) => u.name), equals(['Alice', 'Bob', 'Charlie']));
@@ -131,7 +133,7 @@ test('Given an empty database, '
 });
 ```
 
-`.where()` uses an index; `.filter()` scans. Match whichever the production query uses so the test exercises the same path.
+`.where()` needs an `@Index` on the field and uses it; `.filter()` scans without one. Mirror whichever clause the production query uses — a test that filters where production indexes exercises a different code path.
 
 ## Thai text
 

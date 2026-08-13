@@ -84,20 +84,20 @@ test('Given the use case is slow, '
 
 ## Workers
 
-`debounce`/`ever`/`once` fire asynchronously — advance past the debounce window, then assert the call that survived *and* the one that got dropped.
+`debounce`/`ever`/`once` fire asynchronously, and the worker's callback is not awaited — wait past the debounce window with `untilCalled`, then assert the call that survived *and* the one that got dropped.
 
 ```dart
 test('Given two queries typed inside the debounce window, '
     'When the window elapses, '
     'Then only the last query is searched', () async {
   // Given
-  when(() => mockUseCase.search(any())).thenAnswer((_) async => []);
+  when(() => mockUseCase.search(any())).thenAnswer((_) async => <User>[]);
   controller.onInit();
 
   // When
   controller.searchQuery.value = 'test';
   controller.searchQuery.value = 'testing';
-  await Future.delayed(const Duration(milliseconds: 500));
+  await untilCalled(() => mockUseCase.search('testing'));
 
   // Then
   verify(() => mockUseCase.search('testing')).called(1);
@@ -105,14 +105,22 @@ test('Given two queries typed inside the debounce window, '
 });
 ```
 
+`untilCalled` returns as soon as the call lands, so it neither sleeps for a fixed delay nor races the debounce timer.
+
 ## Lifecycle
 
-`onInit` and `onClose` are ordinary methods — call them directly.
+`onInit` and `onClose` are ordinary methods — call them directly. Whatever `onInit` reads must be on the controller before the call, so seed it in the constructor:
 
 ```dart
-test('Given a controller with a seeded id, '
+setUp(() {
+  mockUseCase = MockGetUserUseCase();
+  Get.testMode = true;
+  controller = UserController(useCase: mockUseCase, userId: '123');
+});
+
+test('Given a controller constructed with a user id, '
     'When onInit runs, '
-    'Then the user is loaded', () async {
+    'Then that user is loaded', () async {
   // Given
   when(() => mockUseCase('123')).thenAnswer((_) async => expectedUser);
 
@@ -123,18 +131,23 @@ test('Given a controller with a seeded id, '
   // Then
   expect(controller.user.value, equals(expectedUser));
 });
+```
 
+For `onClose`, assert an observable effect the controller actually owns — a flag it flips, a stream it cancels through a mocked dependency. `GetxController` exposes no subscription handle to inspect, so a test reaching for one will not compile.
+
+```dart
 test('Given an initialised controller, '
     'When onClose runs, '
-    'Then its subscription is paused', () {
+    'Then the stream subscription is cancelled through the use case', () {
   // Given
+  when(() => mockUseCase.cancel()).thenReturn(null);
   controller.onInit();
 
   // When
   controller.onClose();
 
   // Then
-  expect(controller.subscription.isPaused, isTrue);
+  verify(() => mockUseCase.cancel()).called(1);
 });
 ```
 
@@ -191,7 +204,7 @@ testWidgets('Given a user with a Thai name, '
 
 ## Interactions
 
-Find by `Key`, not by type — type finders break the moment a second button appears.
+Pick the finder by what is being identified: anything the user taps or types into by `Key` (a `byType(ElevatedButton)` breaks the moment a second button appears), text the user reads by `find.text`, and chrome with no text of its own — spinners, dividers, icons — by `byType`.
 
 ```dart
 testWidgets('Given UserScreen is rendered, '
@@ -256,7 +269,7 @@ testWidgets('Given a user list with routes registered, '
   ));
 
   // When
-  await tester.tap(find.text('John Doe'));
+  await tester.tap(find.byKey(const Key('user_row_123')));
   await tester.pumpAndSettle();
 
   // Then

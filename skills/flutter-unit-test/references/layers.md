@@ -109,14 +109,15 @@ test('Given the remote source throws, '
     'When getUser is called, '
     'Then the locally cached user is returned', () async {
   // Given
+  const cached = UserModel(id: '123', name: 'John');
   when(() => mockRemote.fetchUser('123')).thenThrow(ServerException());
-  when(() => mockLocal.getUser('123')).thenAnswer((_) async => model);
+  when(() => mockLocal.getUser('123')).thenAnswer((_) async => cached);
 
   // When
   final result = await repository.getUser('123');
 
   // Then
-  expect(result, equals(model.toEntity()));
+  expect(result, equals(cached.toEntity()));
 });
 ```
 

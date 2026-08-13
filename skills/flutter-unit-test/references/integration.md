@@ -56,7 +56,7 @@ void main() {
 ## Rules
 
 - `pumpAndSettle()` after every action — real network and animations need more than one frame. A bare `pump()` here is the usual cause of a flaky integration test.
-- Find by `Key` only. Text finders break under localisation, and this suite runs in Thai too.
+- Tap and type by `Key` — never `byType`, since a real screen holds many buttons of the same class. Assert visible copy with `find.text`, and when the suite runs in Thai, assert the translated string, not the English one.
 - Cover the failure path alongside the happy path; a flow test that only passes proves nothing about error handling.
 - Leave no state behind: reset the database or sign out in `tearDown`, or the second run fails on the first run's leftovers.
 
