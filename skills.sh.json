@@ -8,6 +8,13 @@
       "skills": [
         "grill-with-plan"
       ]
+    },
+    {
+      "title": "Testing",
+      "description": "Skills for writing tests.",
+      "skills": [
+        "flutter-unit-test"
+      ]
     }
   ]
 }
