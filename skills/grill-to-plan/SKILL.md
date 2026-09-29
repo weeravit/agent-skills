@@ -1,6 +1,6 @@
 ---
-name: grill-with-plan
-description: Orchestrator that chains grilling, ponytail, and superpowers:writing-plans — asks the user which language to grill in, pressure-tests the plan against over-engineering, then writes the confirmed design to an English plan doc in-project.
+name: grill-to-plan
+description: Orchestrator that chains grilling, ponytail, superpowers:writing-plans, and flutter-unit-test — asks the user which language to grill in, pressure-tests the plan against over-engineering, then writes the confirmed design to an English plan doc in-project, with tests written per flutter-unit-test.
 disable-model-invocation: true
 ---
 
@@ -22,7 +22,7 @@ $ARGUMENTS
 6. Only after that confirmation, run `superpowers:writing-plans` to write the plan:
    - Language: English.
    - Save path: `docs/superpowers/plans/` in the project (not the harness scratch/plan path).
-   - Exclude tests from the plan.
+   - Include tests in the plan. Write every test step by following the `flutter-unit-test` skill — its rules, mocking, and Given-When-Then structure.
    - Do not run `dart format` on it.
    - Do not perform any translation work.
    - No comments in the plan's code at all. Make the code self-explanatory instead: intent-revealing names, small functions, explicit types — a human reads it without a comment.
